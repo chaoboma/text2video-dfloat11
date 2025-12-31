@@ -1,0 +1,538 @@
+body { background-color: #f8f9fa; }
+        .preview-area {
+            min-height: 400px;
+            background: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            border: 2px dashed #ced4da;
+            cursor: pointer; /* Add cursor pointer to indicate clickable */
+        }
+        .preview-area img {
+            max-width: 100%;
+            max-height: 75vh;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            cursor: pointer; /* Also for the image itself */
+        }
+        .loading-spinner {
+            width: 3rem;
+            height: 3rem;
+        }
+        .them-lang-switch-buttons {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            z-index: 1000;
+        }
+        .tooltip-icon {
+            cursor: pointer;
+        }
+        /* Style for the modal image to ensure it fits the screen */
+        .modal-dialog-custom {
+            max-width: 95vw;
+            margin: 1rem auto;
+        }
+        .modal-content-custom {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+        }
+        .modal-body-custom {
+            padding: 0;
+            position: relative;
+            text-align: center;
+        }
+        .modal-image-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        .modal-image-full {
+            max-height: 90vh;
+            max-width: 100%;
+            width: auto;
+            display: inline-block;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border-radius: 4px;
+        }
+        .close-btn-custom {
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            z-index: 1060;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            color: white;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 0;
+        }
+        .close-btn-custom:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(1.1);
+        }
+        .delete-history-item {
+            color: #6c757d;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+            padding: 0.25rem 0.5rem; /* Bootstrap's py-1 px-2 approx */
+            align-self: center; 
+        }
+        .delete-history-item:not(.btn-danger):hover {
+            color: #dc3545 !important;
+            border-color: #dc3545;
+            background: rgba(220, 53, 69, 0.05);
+        }
+        
+        /* --- History Sidebar Styles --- */
+        .history-sidebar-col {
+            display: none; /* Hidden by default */
+            border-right: 1px solid #dee2e6;
+            background: #fff;
+            height: calc(100vh - 2rem); /* Approx full height minus padding */
+            overflow-y: auto;
+            position: sticky;
+            top: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+        }
+
+        .preview-col {
+            header {
+                margin-bottom: 0.9rem!important;
+            }
+        }
+
+        /* When pinned mode is active (Desktop only) */
+        @media (min-width: 992px) {
+            body.history-pinned .history-sidebar-col {
+                display: block;
+            }
+            body.history-pinned .controls-col {
+                width: 25%; /* Shrink controls slightly */
+                .top-buttons {
+                    min-height: 2.25rem; /* Keep height consistent */
+                }
+            }
+            body.history-pinned .preview-col {
+                width: 50%; /* Shrink preview slightly */
+            }
+            /* Hide the offcanvas toggle button when pinned */
+            body.history-pinned .offcanvas-toggle-btn {
+                display: none !important;
+            }
+        }
+
+        /* Hide subtitle on smaller PC screens (< 1280px) */
+        @media (min-width: 992px) and (max-width: 1279px) {
+            header .text-secondary[data-i18n="subtitle"],
+            .header-subtitle {
+                display: none !important;
+            }
+        }
+        /* When pinned mode is active (Desktop only) */
+        @media (max-width: 1024px) {
+            body.history-pinned .preview-col {
+                header {
+                    margin-bottom: 0.75rem!important;
+                }
+                .header-title {
+                    font-size: 1.2rem;
+                    margin-top: 0.55rem;
+                    margin-bottom: 0.25rem!important;
+                }
+                .header-subtitle {
+                    font-size: 0.8rem;
+                }
+            }
+        }
+        .history-item-active {
+            background-color: #e9ecef;
+            border-left: 4px solid #0d6efd;
+        }
+
+        /* Styles for precision dropdown button text ellipsis */
+        #precisionDropdownButton {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            display: block; /* Ensures ellipsis works */
+            text-align: left; /* Aligns text left in the button */
+            padding-right: 2.5rem; /* Space for the caret */
+        }
+        /* Styles for dynamic width of precision dropdown menu */
+        #precisionDropdownMenu {
+            min-width: max-content; /* Adjust width to fit content */
+        }
+
+        /* Button styling for icon-only and responsive layout */
+        .btn i.bi {
+            font-size: 1rem;
+            line-height: 1;
+        }
+        /* Ensure buttons have consistent height */
+        .btn {
+            min-height: 2.25rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.375rem 0.75rem;
+        }
+        /* Icon + text buttons (desktop) */
+        .btn span.ms-1 {
+            margin-left: 0.25rem !important;
+            font-size: 0.875rem;
+        }
+        /* Desktop button container alignment */
+        #resultInfo .d-flex.gap-2.d-none.d-md-flex {
+            align-items: center;
+        }
+        /* PC Layout: Right-aligned buttons with reasonable sizing */
+        #resultInfo .d-flex.gap-2:not(.d-md-none) {
+            justify-content: flex-end;
+            flex-wrap: nowrap;
+        }
+        #resultInfo .d-flex.gap-2:not(.d-md-none) .btn {
+            min-width: 100px;
+            max-width: 130px;
+        }
+        /* Mobile button styling - full width with text */
+        @media (max-width: 767.98px) {
+            #resultInfo .d-md-none .btn {
+                flex: 1 1 auto;
+                min-width: 100px;
+            }
+            #resultInfo .d-md-none {
+                margin-top: 1rem;
+                padding-top: 1rem;
+                border-top: 1px solid #dee2e6;
+            }
+        }
+        /* Dark mode button adjustments */
+        [data-bs-theme="dark"] #resultInfo .d-md-none {
+            border-top-color: #495057;
+        }
+        /* Mobile portrait: Icon-only buttons to stay in single row */
+        @media (max-width: 575.98px) and (orientation: portrait) {
+            #resultInfo .d-flex.gap-2 .btn span.ms-1 {
+                display: none !important; /* Hide text in portrait */
+            }
+            #resultInfo .d-flex.gap-2 .btn {
+                min-width: 48px!important; /* Smaller for icon-only */
+                padding: 0.25rem 0.5rem;
+                flex: 0 0 auto; /* Prevent flex growth */
+            }
+            #resultInfo .d-flex.gap-2 {
+                justify-content: space-between; /* Even spacing */
+            }
+            /* Fix header title overlap with lang switcher in mobile portrait */
+            header.d-lg-none {
+                text-align: left !important;
+                padding-right: 120px; /* Make space for lang switcher */
+                .text-secondary {
+                    display: none; /* Hide subtitle to save space */
+                }
+            }
+        }
+        
+        /* Dark Mode Overrides */
+        [data-bs-theme="dark"] body {
+            background-color: #212529;
+        }
+        [data-bs-theme="dark"] .bg-light {
+            background-color: #343a40 !important;
+            color: #f8f9fa;
+        }
+        [data-bs-theme="dark"] .preview-area {
+            background: #2b3035;
+            border-color: #495057;
+        }
+        [data-bs-theme="dark"] .history-sidebar-col {
+            background: #212529;
+            border-right-color: #495057;
+        }
+        [data-bs-theme="dark"] .history-item-active {
+            background-color: #343a40;
+            border-left-color: #0d6efd;
+            color: #f8f9fa;
+        }
+        [data-bs-theme="dark"] .list-group-item-action:hover {
+            background-color: #343a40;
+            color: #f8f9fa;
+        }
+        [data-bs-theme="dark"] .text-secondary {
+            color: #adb5bd !important;
+        }
+        [data-bs-theme="dark"] .text-muted {
+            color: #adb5bd !important;
+        }
+        [data-bs-theme="dark"] .delete-history-item:hover {
+            background: rgba(220, 53, 69, 0.2);
+        }
+        [data-bs-theme="dark"] .close-btn-custom {
+            background: rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        [data-bs-theme="dark"] .close-btn-custom:hover {
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        /* Pull to Refresh Styles */
+        .pull-refresh-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 60px;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.2s ease;
+            position: absolute;
+            top: -20px;
+            left: 0;
+            right: 0;
+            z-index: 10;
+            background: inherit;
+            pointer-events: none; /* Don't block clicks when hidden/inactive */
+            /* border-bottom: 1px solid rgba(0, 0, 0, 0.1);*/
+        }
+
+        .pull-refresh-indicator.active,
+        .pull-refresh-indicator.loading,
+        .pull-refresh-indicator.ready {
+            pointer-events: auto; /* Only capture events when visible/active */
+        }
+
+        [data-bs-theme="dark"] .pull-refresh-indicator {
+            border-bottom-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .pull-refresh-indicator.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .pull-refresh-indicator.loading {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .pull-refresh-indicator .bi-arrow-down-circle {
+            font-size: 1rem;
+        }
+
+        /* Refresh state padding for history containers */
+        .history-container-refresh {
+            padding-top: 60px !important;
+            transition: padding-top 0.3s ease;
+        }
+
+        /* Ensure proper spacing for pull-to-refresh */
+        .offcanvas-body {
+            transition: padding-top 0.3s ease;
+            padding-top: 0;
+        }
+
+        .offcanvas-body.refreshing {
+            padding-top: 60px;
+        }
+
+        /* Add margin to history list during refresh when indicator is active */
+        #historyList.with-refresh-indicator,
+        #historyListSidebar.with-refresh-indicator {
+            margin-top: 60px;
+            transition: margin-top 0.3s ease;
+        }
+
+        /* Refresh Button Animation */
+        .refresh-spin {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Borderless refresh button styling */
+        #refreshHistoryBtn,
+        #refreshHistorySidebarBtn {
+            text-decoration: none;
+            border: none !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            transition: all 0.2s ease;
+        }
+
+        #refreshHistoryBtn:hover,
+        #refreshHistorySidebarBtn:hover {
+            color: var(--bs-primary) !important;
+            background-color: rgba(13, 110, 253, 0.1) !important;
+            border-radius: 4px;
+        }
+
+        #refreshHistoryBtn:active,
+        #refreshHistorySidebarBtn:active {
+            transform: scale(0.95);
+        }
+
+        #refreshHistoryBtn:focus,
+        #refreshHistorySidebarBtn:focus {
+            outline: 2px solid var(--bs-primary);
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+
+        /* Dark mode adjustments */
+        [data-bs-theme="dark"] #refreshHistoryBtn:hover,
+        [data-bs-theme="dark"] #refreshHistorySidebarBtn:hover {
+            background-color: rgba(13, 110, 253, 0.2) !important;
+            color: var(--bs-primary) !important;
+        }
+
+        /* Pull threshold states */
+        .pull-refresh-indicator.ready .bi-arrow-down-circle {
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .pull-refresh-indicator.loading .bi-arrow-down-circle {
+            animation: spin 1s linear infinite;
+        }
+
+        /* Input wrapper - provides the border around input + clear button */
+        .search-input-wrapper,
+        .date-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: stretch;
+            border: var(--bs-border-width) solid var(--bs-border-color);
+            border-radius: var(--bs-border-radius);
+            background: var(--bs-body-bg);
+            box-sizing: border-box;
+        }
+
+        .search-input-wrapper {
+            flex: 1;
+        }
+
+        /* Fixed height for date input wrappers to prevent gap */
+        .date-input-wrapper {
+            height: 31px; /* Matches form-control-sm height */
+        }
+
+        .search-input-wrapper:focus-within,
+        .date-input-wrapper:focus-within {
+            border-color: var(--bs-focus-ring-color);
+            box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+        }
+
+        /* Input inside wrapper - no border, takes available space */
+        .search-input-wrapper input,
+        .date-input-wrapper input {
+            border: none !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            flex: 1;
+            min-width: 0;
+            background: transparent !important;
+            box-sizing: border-box;
+        }
+
+        .search-input-wrapper input:focus,
+        .date-input-wrapper input:focus {
+            box-shadow: none !important;
+            outline: none;
+        }
+
+        /* Fixed height for date inputs to ensure consistency */
+        .date-input-wrapper input[type="date"] {
+            height: 100%;
+        }
+
+        /* Inner clear button - borderless, inside the wrapper */
+        .btn-clear-inner {
+            border: none !important;
+            background: transparent !important;
+            color: var(--bs-secondary-color, #6c757d);
+            opacity: 0;
+            padding: 0.25rem 0.5rem;
+            transition: opacity 0.15s ease, background-color 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-clear-inner:hover {
+            opacity: 1;
+            background-color: var(--bs-tertiary-bg, rgba(0, 0, 0, 0.04)) !important;
+        }
+
+        .btn-clear-inner:focus {
+            opacity: 1;
+            outline: none;
+            box-shadow: none !important;
+        }
+
+        /* Show clear button when not d-none */
+        .btn-clear-inner:not(.d-none) {
+            opacity: 0.5;
+        }
+
+        /* Dark mode for input wrappers */
+        [data-bs-theme="dark"] .search-input-wrapper,
+        [data-bs-theme="dark"] .date-input-wrapper {
+            background: var(--bs-body-bg);
+            border-color: var(--bs-border-color-translucent);
+        }
+
+        [data-bs-theme="dark"] .search-input-wrapper:focus-within,
+        [data-bs-theme="dark"] .date-input-wrapper:focus-within {
+            border-color: var(--bs-focus-ring-color);
+        }
+
+        [data-bs-theme="dark"] .btn-clear-inner:hover {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        /* Borderless pin button on history drawer */
+        #pinHistoryBtn {
+            text-decoration: none;
+            border: none !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            transition: all 0.2s ease;
+        }
+
+        #pinHistoryBtn:hover {
+            color: var(--bs-primary) !important;
+            background-color: rgba(13, 110, 253, 0.1) !important;
+            border-radius: 4px;
+        }
+
+        #pinHistoryBtn:active {
+            transform: scale(0.95);
+        }
+
+        #pinHistoryBtn:focus {
+            outline: 2px solid var(--bs-primary);
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+
+        /* Dark mode for pin button */
+        [data-bs-theme="dark"] #pinHistoryBtn:hover {
+            background-color: rgba(13, 110, 253, 0.2) !important;
+            color: var(--bs-primary) !important;
+        }
