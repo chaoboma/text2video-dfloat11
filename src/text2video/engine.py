@@ -129,7 +129,7 @@ def generate_video(
                 num_frames=150,
                 guidance_scale=4.0,
                 guidance_scale_2=3.0,
-                num_inference_steps=30,
+                num_inference_steps=40,
             ).frames[0]
     except Exception as e:
         logger.error(f"Error generating video: {e}")
